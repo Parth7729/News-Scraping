@@ -1,0 +1,28 @@
+from bs4 import BeautifulSoup as bs
+from selenium import webdriver
+import time
+
+
+class NewsPage:
+
+    def __init__(self, topic):
+        url = "https://timesofindia.indiatimes.com/"
+        driver = webdriver.Chrome('C:\chromedriver.exe')
+        driver.get(url)
+        driver.implicitly_wait(5)
+
+        driver.find_element_by_xpath('//*[@id="header"]/div[2]/div[2]/div/span').click()
+        driver.find_element_by_xpath('//*[@id="query"]').send_keys(topic)
+        driver.find_element_by_xpath('//*[@id="header"]/div[2]/div[2]/div/div/form/input[2]').click()
+        time.sleep(5)
+        self.source = bs(driver.page_source, 'html.parser')
+
+
+topic = input('Which topic do you wanna know about? ')
+page = NewsPage(topic + ' news')
+block = page.source.find('div', {'id': 'c_0101'})
+articles = block.find_all('li', {'class': 'article'})
+
+titles = [title.find('span', {'class': 'title'}).get_text().replace('\n', '') for title in articles]
+paragraph = [para.find('p').get_text() for para in articles]
+links = ["https://timesofindia.indiatimes.com" + links.find('a', href=True)['href'] for links in articles]
