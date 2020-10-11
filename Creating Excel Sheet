@@ -1,0 +1,55 @@
+import xlsxwriter
+from news_scraping import titles, paragraph, links, topic
+
+workbook = xlsxwriter.Workbook('news.xlsx')
+worksheet = workbook.add_worksheet()
+
+format1 = workbook.add_format({'center_across': True, 'bold': True, 'font_size': 20})
+format1.set_border(1)
+format1.set_bg_color('orange')
+format2 = workbook.add_format({'center_across': True, 'font_size': 18})
+format2.set_border(1)
+
+worksheet.set_column(1, 1, 70)
+worksheet.set_column(0, 0, 46)
+worksheet.set_column(2, 2, 46)
+
+worksheet.write(0, 1, 'News:  ' + topic.upper(), format1)
+worksheet.write(2, 0, 'HEADLINES', format2)
+worksheet.write(2, 1, 'BRIEF', format2)
+worksheet.write(2, 2, 'LINKS', format2)
+row, column = 3, 0
+
+format3 = workbook.add_format()
+format3.set_border(1)
+format3.set_text_wrap()
+format3.set_align('top')
+format3.set_font_color('red')
+format3.set_bold()
+for title in titles:
+    worksheet.set_row(row, 110)
+    worksheet.write(row, column, title, format3)
+    row += 1
+
+row = 3
+format4 = workbook.add_format()
+format4.set_border(1)
+format4.set_text_wrap()
+format4.set_font_color('brown')
+format4.set_align('top')
+for para in paragraph:
+    if para == '':
+        para = 'N/A'
+    worksheet.write(row, column + 1, para, format4)
+    row += 1
+
+row = 3
+format5 = workbook.add_format({'font_color': 'blue'})
+format5.set_border(1)
+format5.set_text_wrap()
+format5.set_align('top')
+for link in links:
+    worksheet.write(row, column + 2, link, format5)
+    row += 1
+
+workbook.close()
